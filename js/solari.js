@@ -49,8 +49,8 @@ var EMPTY_ROW = {
 };
 
 //if true, the status column will be handled automatically according to time and date. false will override status with nStatus from payload
-var status_override = true;
-var URL = "../example/postJsonp.py"
+var status_override = false;
+var URL = "http://latte.ca/cgi-bin/status.cgi"
 
 var Status = {
     "none": 0,
@@ -323,9 +323,9 @@ function GetFailBoard() {
 function updateSolariBoard() {
     if (!syncing) {
         syncing = true;
-        $.getJSON(URL + "callback=?", function(data) {
+        $.getJSON(URL, function(data) {
                 if (data !== null) {
-                    solariData = data.slice(0);
+                    solariData = data.slice(-8);
                     failboard = false;
                     syncing = false;
                 }
@@ -361,14 +361,16 @@ function updateSolariBoard() {
         var i;
         //the next due box should display information on the row for which time info is available, which may not be from the first case
         var time;
+        var now = new Date().getTime();
         for (i=0; i< 8; i++) {
             time = solariData[i].sTime;
-            if (typeof time !== "undefined")
+            if (typeof time !== "undefined" &&
+                Date.parse(solariData[i].sDate + " " + time).getTime() - now > 0)
                 break;
         }
         var next_due_row = solariData[i];
         time = next_due_row.sTime;
-        var timeDelta = Date.parse(next_due_row.sDate + " " + time).getTime() - new Date().getTime();
+        var timeDelta = Date.parse(next_due_row.sDate + " " + time).getTime() - now;
         var nOffset = timeDelta > 0 ? Math.floor(timeDelta / (1000 * 60 * 60 * 24)) : Math.ceil(timeDelta / (1000 * 60 * 60 * 24)); //divide by miliseconds per day and round to zero
         var sOffset = (nOffset === 0 ? "" : nOffset.toString() + "d"); //if next due is not today, append a "d"
         if(status_override) {
@@ -376,11 +378,11 @@ function updateSolariBoard() {
                 var hrsDelta = Number(time.substring(0,2)) - new Date().getHours();
                 nOffset += timeDelta < 0 ? -1 : 0; // if the time difference is negative, which means we are within 24 hours of due, so reduce day offset by 1
                 if (nOffset < 0) {
-                    new_board[0].nStatus = 3; // if we've past the due date
+                    new_board[i].nStatus = 3; // if we've past the due date
                 } else if (nOffset === 0 && hrsDelta < 2 && hrsDelta >= 0 ) {
-                    new_board[0].nStatus =1; //due within 2 hours
+                    new_board[i].nStatus =1; //due within 2 hours
                 } else {
-                    new_board[0].nStatus = failboard ? 1 : 2;
+                    new_board[i].nStatus = failboard ? 1 : 2;
                 }
             }
         }
