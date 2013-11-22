@@ -118,7 +118,7 @@ function addSolariBoard(divSelector) {
             "</header>" +
             "<ul class=\"solari-board-columns rounded\">" +
             "<li class=\"time\">Time</li>" +
-            "<li class=\"departure\">Departure / Arrival</li>" +
+            "<li class=\"departure\">Destination   (Arrival)</li>" +
             "<li class=\"status\">Status</li>" +
             "<li class=\"track\">Track</li>" +
             "</ul>" +
