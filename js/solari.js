@@ -50,7 +50,7 @@ var EMPTY_ROW = {
 
 //if true, the status column will be handled automatically according to time and date. false will override status with nStatus from payload
 var status_override = false;
-var URL = "http://latte.ca/cgi-bin/status.cgi"
+var URL = "https://latte.ca/cgi-bin/status.cgi";
 
 var Status = {
     "none": 0,
